@@ -54,3 +54,4 @@ This case study explores business insights from the **KMS Retail Dataset** using
 
 For questions or collaboration, reach out via [micojo99@gmail.com] or [https://www.linkedin.com/in/iyanuoluwa-ojo-309b1527a](#).
 
+Google drive:https://drive.google.com/drive/folders/1fKr5PZB2IGGRm2s5gQdliV0qVaZGH9lF
