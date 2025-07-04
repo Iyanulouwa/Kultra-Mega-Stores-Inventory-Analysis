@@ -1,0 +1,1149 @@
+﻿/*------------------------
+USE DSA;
+
+--1. Which product category had the highest sales?--
+SELECT TOP 1 product_category,SUM(sales) AS total_sales
+FROM dbo.kmssqlcasestudy
+GROUP BY product_category
+ORDER BY total_sales DESC;
+
+--2. What are the Top 3 and Bottom 3 regions in terms of sales?--
+--Top 3
+SELECT TOP 3 region, SUM(sales) AS total_sales
+FROM dbo.kmssqlcasestudy
+GROUP BY region
+ORDER BY total_sales DESC
+--Bottom 3
+SELECT TOP 3 region, SUM(sales) AS total_sales
+FROM dbo.kmssqlcasestudy
+GROUP BY region
+ORDER BY total_sales ASC;
+
+--3. What were the total sales of appliances in Ontario?--
+SELECT SUM(sales) AS total_sales
+FROM dbo.kmssqlcasestudy
+WHERE product_subcategory = 'Appliances' AND province = 'Ontario';
+
+--5. KMS incurred the most shipping cost using which shipping method?
+SELECT ship_mode, SUM(shipping_cost) AS total_shipping_cost
+FROM dbo.kmssqlcasestudy
+GROUP BY ship_mode
+ORDER BY total_shipping_cost DESC;
+
+--6. Who are the most valuable customers, and what products or services do they typically purchase?
+WITH CustomerSales AS(
+	SELECT customer_name, SUM(sales) AS total_sales
+	FROM dbo.kmssqlcasestudy
+	GROUP BY customer_name),
+	TopCustomer AS (
+		SELECT TOP 10 *
+		FROM CustomerSales
+		ORDER BY total_sales DESC)
+		SELECT K.customer_name, product_category, SuM(sales) AS category_sales
+		FROM dbo.kmssqlcasestudy K
+		JOIN
+		TopCustomer t
+		ON K.customer_name= t.customer_name
+		GROUP BY K.customer_name, product_category
+		ORDER BY K.customer_name, category_sales DESC;
+
+--7.  Which small business customer had the highest sales?
+SELECT TOP 1 customer_name, SUM(sales) AS total_sales
+FROM dbo.kmssqlcasestudy
+WHERE customer_segment= 'Small Business'
+GROUP BY customer_name
+ORDER BY total_sales DESC
+
+--8. Which Corporate Customer placed the most number of orders in 2009 – 2012?
+SELECT TOP 1 customer_name, COUNT(order_quantity) AS order_count
+FROM dbo.kmssqlcasestudy
+WHERE customer_segment= 'Corporate' AND YEAR(order_date) BETWEEN 2009 AND 2012
+GROUP BY customer_name
+ORDER BY order_count DESC
+
+--9.  Which consumer customer was the most profitable one?
+SELECT TOP 1 customer_name, SUM(profit) AS total_profit
+FROM dbo.kmssqlcasestudy
+WHERE customer_segment= 'Consumer'
+GROUP BY customer_name
+ORDER BY total_profit DESC
+
+--10. Which customer returned items, and what segment do they belong to? (Negative Profit)
+SELECT DISTINCT customer_name, customer_segment
+FROM dbo.kmssqlcasestudy
+WHERE profit < 0
+
+--11. If the delivery truck is the most economical but the slowest shipping method and 
+	--Express Air is the fastest but the most expensive one,
+	--do you think the company appropriately spent shipping costs based on the Order Priority? Explain your answer
+SELECT order_priority, ship_mode,			
+       AVG(shipping_cost) AS avg_shipping_cost,			
+       COUNT(order_id) AS total_orders			
+FROM dbo.kmssqlcasestudy		
+GROUP BY order_priority, ship_mode;
+------------------------*/
+product_category                                   total_sales
+-------------------------------------------------- ----------------------
+Technology                                         5984248.5
+
+(1 row affected)
+
+region                                             total_sales
+-------------------------------------------------- ----------------------
+West                                               3597549.41
+Ontario                                            3063212.6
+Prarie                                             2837304.6
+
+(3 rows affected)
+
+region                                             total_sales
+-------------------------------------------------- ----------------------
+Nunavut                                            116376.47
+Northwest Territories                              800847.35
+Yukon                                              975867.39
+
+(3 rows affected)
+
+total_sales
+----------------------
+202346.84
+
+(1 row affected)
+
+ship_mode                                          total_shipping_cost
+-------------------------------------------------- ----------------------
+Delivery Truck                                     51971.9399999998
+Regular Air                                        48008.1899999997
+Express Air                                        7850.90999999997
+
+(3 rows affected)
+
+customer_name                                      product_category                                   category_sales
+-------------------------------------------------- -------------------------------------------------- ----------------------
+Alejandro Grove                                    Office Supplies                                    51696.02
+Alejandro Grove                                    Furniture                                          31865.91
+Darren Budd                                        Furniture                                          43367.21
+Darren Budd                                        Technology                                         38210.14
+Deborah Brumfield                                  Technology                                         76795.8
+Deborah Brumfield                                  Furniture                                          12809.62
+Deborah Brumfield                                  Office Supplies                                    7827.72
+Emily Phan                                         Technology                                         110481.96
+Emily Phan                                         Furniture                                          4011.65
+Emily Phan                                         Office Supplies                                    2630.82
+Grant Carroll                                      Office Supplies                                    50837.27
+Grant Carroll                                      Furniture                                          29826.85
+Grant Carroll                                      Technology                                         7752.88
+John Lucas                                         Furniture                                          44090.34
+John Lucas                                         Office Supplies                                    25818.99
+John Lucas                                         Technology                                         9786.86
+Julia Barnett                                      Furniture                                          46359.63
+Julia Barnett                                      Office Supplies                                    16925.45
+Julia Barnett                                      Technology                                         16759.38
+Liz MacKendrick                                    Technology                                         33457.21
+Liz MacKendrick                                    Office Supplies                                    22346.1
+Liz MacKendrick                                    Furniture                                          20503.12
+Roy Skaria                                         Furniture                                          50177.24
+Roy Skaria                                         Technology                                         30349.4
+Roy Skaria                                         Office Supplies                                    12015.52
+Sylvia Foulston                                    Furniture                                          48173.38
+Sylvia Foulston                                    Technology                                         29669.04
+Sylvia Foulston                                    Office Supplies                                    11033.34
+
+(28 rows affected)
+
+customer_name                                      total_sales
+-------------------------------------------------- ----------------------
+Dennis Kane                                        75967.59
+
+(1 row affected)
+
+customer_name                                      order_count
+-------------------------------------------------- -----------
+Adam Hart                                          27
+
+(1 row affected)
+
+customer_name                                      total_profit
+-------------------------------------------------- ----------------------
+Emily Phan                                         34005.44
+
+(1 row affected)
+
+customer_name                                      customer_segment
+-------------------------------------------------- --------------------------------------------------
+Aaron Bergman                                      Corporate
+Aaron Hawkins                                      Home Office
+Aaron Smayling                                     Small Business
+Adam Bellavance                                    Small Business
+Adam Hart                                          Corporate
+Adam Shillingsburg                                 Corporate
+Adrian Barton                                      Small Business
+Adrian Hane                                        Corporate
+Adrian Shami                                       Consumer
+Aimee Bixby                                        Home Office
+Alan Barnes                                        Corporate
+Alan Dominguez                                     Corporate
+Alan Haines                                        Consumer
+Alan Haines                                        Home Office
+Alan Hwang                                         Corporate
+Alan Hwang                                         Small Business
+Alan Schoenberger                                  Corporate
+Alan Shonely                                       Small Business
+Alejandro Ballentine                               Small Business
+Alejandro Grove                                    Consumer
+Alejandro Grove                                    Corporate
+Aleksandra Gannaway                                Corporate
+Aleksandra Gannaway                                Home Office
+Alex Avila                                         Corporate
+Alex Avila                                         Home Office
+Alex Grayson                                       Consumer
+Alex Russell                                       Home Office
+Alice McCarthy                                     Corporate
+Allen Armold                                       Home Office
+Allen Golden                                       Consumer
+Allen Rosenblatt                                   Small Business
+Alyssa Crouse                                      Corporate
+Alyssa Crouse                                      Home Office
+Alyssa Tate                                        Small Business
+Amy Cox                                            Corporate
+Amy Cox                                            Home Office
+Amy Cox                                            Small Business
+Amy Hunt                                           Consumer
+Amy Hunt                                           Home Office
+Amy Hunt                                           Small Business
+Andrew Allen                                       Corporate
+Andrew Gjertsen                                    Consumer
+Andrew Roberts                                     Home Office
+Andrew Roberts                                     Small Business
+Andy Reiter                                        Corporate
+Andy Yotov                                         Corporate
+Anemone Ratner                                     Small Business
+Angele Hood                                        Consumer
+Ann Blume                                          Corporate
+Ann Blume                                          Small Business
+Ann Chong                                          Corporate
+Ann Steele                                         Corporate
+Anna Andreadi                                      Small Business
+Anna Chung                                         Home Office
+Anna Gayman                                        Corporate
+Anna Haberlin                                      Corporate
+Anne McFarland                                     Consumer
+Anne Pryor                                         Consumer
+Anne Pryor                                         Corporate
+Anne Pryor                                         Home Office
+Annie Cyprus                                       Home Office
+Annie Thurman                                      Consumer
+Annie Thurman                                      Home Office
+Anthony Garverick                                  Small Business
+Anthony Jacobs                                     Home Office
+Anthony Johnson                                    Small Business
+Anthony O'Donnell                                  Consumer
+Anthony O'Donnell                                  Corporate
+Anthony Rawles                                     Small Business
+Anthony Witt                                       Corporate
+Arianne Irving                                     Corporate
+Art Ferguson                                       Corporate
+Art Foster                                         Home Office
+Art Miller                                         Corporate
+Arthur Gainer                                      Consumer
+Arthur Gainer                                      Corporate
+Arthur Prichep                                     Home Office
+Arthur Prichep                                     Small Business
+Arthur Wiediger                                    Corporate
+Ashley Jarboe                                      Home Office
+Ashley Jarboe                                      Small Business
+Astrea Jones                                       Corporate
+Barbara Fisher                                     Small Business
+Barry Blumstein                                    Small Business
+Barry Franz                                        Corporate
+Barry French                                       Consumer
+Barry Gonzalez                                     Consumer
+Barry Gonzalez                                     Small Business
+Barry Pond                                         Consumer
+Barry Weirich                                      Corporate
+Bart Folk                                          Corporate
+Bart Watters                                       Corporate
+Becky Castell                                      Consumer
+Becky Martin                                       Home Office
+Becky Pak                                          Corporate
+Ben Ferrer                                         Corporate
+Ben Peterman                                       Corporate
+Ben Wallace                                        Home Office
+Benjamin Farhat                                    Home Office
+Benjamin Patterson                                 Corporate
+Benjamin Venier                                    Small Business
+Berenike Kampe                                     Corporate
+Beth Fritzler                                      Small Business
+Beth Paige                                         Consumer
+Beth Thompson                                      Corporate
+Bill Donatelli                                     Corporate
+Bill Donatelli                                     Small Business
+Bill Eplett                                        Corporate
+Bill Overfelt                                      Corporate
+Bill Shonely                                       Small Business
+Bill Stewart                                       Corporate
+Bill Tyler                                         Consumer
+Bobby Elias                                        Small Business
+Bobby Odegard                                      Corporate
+Bobby Trafton                                      Corporate
+Bobby Trafton                                      Small Business
+Brad Eason                                         Small Business
+Brad Norvell                                       Corporate
+Brad Thomas                                        Corporate
+Brad Thomas                                        Home Office
+Bradley Drucker                                    Small Business
+Bradley Nguyen                                     Consumer
+Bradley Nguyen                                     Corporate
+Bradley Talbott                                    Corporate
+Bradley Talbott                                    Small Business
+Brenda Bowman                                      Home Office
+Brenda Bowman                                      Small Business
+Brendan Dodson                                     Corporate
+Brendan Murry                                      Corporate
+Brendan Sweed                                      Consumer
+Brian Dahlen                                       Small Business
+Brian DeCherney                                    Corporate
+Brian Derr                                         Small Business
+Brian Moss                                         Corporate
+Brian Stugart                                      Consumer
+Brian Stugart                                      Corporate
+Brooke Gillingham                                  Small Business
+Brosina Hoffman                                    Consumer
+Bruce Degenhardt                                   Home Office
+Bruce Money                                        Corporate
+Bruce Stewart                                      Corporate
+Bryan Davis                                        Corporate
+Bryan Mills                                        Corporate
+Bryan Mills                                        Small Business
+Bryan Spruell                                      Home Office
+Candace McMahon                                    Corporate
+Cari MacIntyre                                     Corporate
+Cari Sayre                                         Corporate
+Cari Sayre                                         Home Office
+Cari Schnelling                                    Home Office
+Cari Schnelling                                    Small Business
+Carl Jackson                                       Corporate
+Carl Jackson                                       Home Office
+Carl Ludwig                                        Corporate
+Carl Weiss                                         Consumer
+Carlos Daly                                        Corporate
+Carlos Daly                                        Home Office
+Carlos Meador                                      Consumer
+Carlos Meador                                      Corporate
+Carlos Soltero                                     Consumer
+Carlos Soltero                                     Small Business
+Carol Adams                                        Corporate
+Carol Darley                                       Home Office
+Carol Darley                                       Small Business
+Carol Triggs                                       Corporate
+Carol Triggs                                       Home Office
+Caroline Jumper                                    Corporate
+Cassandra Brandow                                  Home Office
+Catherine Glotzbach                                Home Office
+Cathy Armstrong                                    Consumer
+Cathy Hwang                                        Home Office
+Cathy Prescott                                     Corporate
+Chad Cunningham                                    Small Business
+Chad McGuire                                       Small Business
+Chad Sievert                                       Corporate
+Charles Crestani                                   Consumer
+Charles McCrossin                                  Corporate
+Charles Sheldon                                    Corporate
+Charlotte Melton                                   Home Office
+Chloris Kastensmidt                                Consumer
+Chris Cortes                                       Consumer
+Chris McAfee                                       Consumer
+Chris Selesnick                                    Home Office
+Christina Anderson                                 Corporate
+Christina DeMoss                                   Home Office
+Christina Vanderzanden                             Small Business
+Christine Abelman                                  Corporate
+Christine Phan                                     Small Business
+Christine Sundaresam                               Small Business
+Christopher Conant                                 Consumer
+Christopher Conant                                 Home Office
+Christopher Martinez                               Home Office
+Christopher Martinez                               Small Business
+Christopher Schild                                 Corporate
+Christy Brittain                                   Consumer
+Chuck Clark                                        Corporate
+Chuck Magee                                        Corporate
+Chuck Sachs                                        Consumer
+Cindy Chapman                                      Consumer
+Cindy Chapman                                      Corporate
+Cindy Schnelling                                   Corporate
+Cindy Stewart                                      Consumer
+Cindy Stewart                                      Corporate
+Claire Good                                        Home Office
+Claudia Miner                                      Small Business
+Clay Cheatham                                      Small Business
+Clay Ludtke                                        Consumer
+Clay Rozendal                                      Corporate
+Clytie Kelty                                       Small Business
+Corey Catlett                                      Home Office
+Corey Lock                                         Home Office
+Corey Roper                                        Small Business
+Corinna Mitchell                                   Corporate
+Craig Carroll                                      Corporate
+Craig Leslie                                       Consumer
+Craig Molinari                                     Small Business
+Craig Yedwab                                       Consumer
+Craig Yedwab                                       Corporate
+Cyma Kinney                                        Small Business
+Cynthia Arntzen                                    Home Office
+Cynthia Arntzen                                    Small Business
+Cynthia Delaney                                    Corporate
+Cynthia Voltz                                      Corporate
+Cyra Reiten                                        Consumer
+Damala Kotsonis                                    Corporate
+Dan Campbell                                       Corporate
+Dan Campbell                                       Small Business
+Dan Lawera                                         Corporate
+Dan Reichenbach                                    Corporate
+Dana Kaydos                                        Corporate
+Daniel Byrd                                        Home Office
+Daniel Lacy                                        Small Business
+Daniel Raglin                                      Corporate
+Dario Medina                                       Small Business
+Darren Budd                                        Consumer
+Darren Budd                                        Corporate
+Darren Budd                                        Home Office
+Darren Koutras                                     Consumer
+Darren Powers                                      Corporate
+Darrin Martin                                      Small Business
+Darrin Sayre                                       Consumer
+Darrin Van Huff                                    Home Office
+Dave Brooks                                        Corporate
+Dave Hallsten                                      Corporate
+Dave Hallsten                                      Home Office
+Dave Kipp                                          Consumer
+Dave Kipp                                          Corporate
+Dave Poirier                                       Small Business
+David Bremer                                       Corporate
+David Flashing                                     Consumer
+David Flashing                                     Home Office
+David Kendrick                                     Home Office
+David Philippe                                     Consumer
+David Smith                                        Small Business
+David Wiener                                       Consumer
+Dean Braden                                        Corporate
+Dean Katz                                          Home Office
+Dean Percer                                        Consumer
+Dean Percer                                        Home Office
+Deanra Eno                                         Corporate
+Deborah Brumfield                                  Small Business
+Debra Catini                                       Small Business
+Deirdre Greer                                      Home Office
+Delfina Latchford                                  Small Business
+Denise Leinenbach                                  Home Office
+Denise Monton                                      Home Office
+Dennis Bolton                                      Consumer
+Dennis Bolton                                      Small Business
+Dennis Kane                                        Small Business
+Dennis Pardue                                      Corporate
+Dennis Pardue                                      Small Business
+Denny Blanton                                      Home Office
+Denny Joy                                          Corporate
+Denny Ordway                                       Small Business
+Dianna Arnett                                      Home Office
+Dianna Vittorini                                   Corporate
+Dianna Wilson                                      Small Business
+Dionis Lloyd                                       Small Business
+Don Jones                                          Corporate
+Don Miller                                         Home Office
+Don Weiss                                          Corporate
+Dorothy Badders                                    Home Office
+Dorothy Wardle                                     Corporate
+Dorris Love                                        Corporate
+Dorris Love                                        Home Office
+Doug Bickford                                      Corporate
+Doug Bickford                                      Small Business
+Doug Jacobs                                        Home Office
+Doug O'Connell                                     Small Business
+Duane Benoit                                       Home Office
+Duane Huffman                                      Consumer
+Duane Huffman                                      Small Business
+Duane Noonan                                       Corporate
+Ed Braxton                                         Consumer
+Ed Braxton                                         Home Office
+Ed Jacobs                                          Small Business
+Ed Ludwig                                          Consumer
+Edward Becker                                      Corporate
+Edward Becker                                      Home Office
+Edward Hooks                                       Consumer
+Edward Nazzal                                      Home Office
+Edward Nazzal                                      Small Business
+Eileen Kiefer                                      Consumer
+Eleni McCrary                                      Corporate
+Eleni McCrary                                      Home Office
+Elizabeth Moffitt                                  Consumer
+Ellis Ballard                                      Corporate
+Elpida Rittenbach                                  Consumer
+Emily Burns                                        Home Office
+Emily Ducich                                       Consumer
+Emily Grady                                        Home Office
+Emily Phan                                         Consumer
+Eric Barreto                                       Consumer
+Eric Barreto                                       Small Business
+Eric Hoffmann                                      Small Business
+Eric Murdock                                       Home Office
+Erica Bern                                         Corporate
+Erica Bern                                         Small Business
+Erica Hackney                                      Small Business
+Erica Hernandez                                    Small Business
+Erica Smith                                        Small Business
+Erin Ashbrook                                      Consumer
+Erin Creighton                                     Corporate
+Erin Mull                                          Corporate
+Erin Mull                                          Small Business
+Erin Smith                                         Home Office
+Eudokia Martin                                     Home Office
+Eugene Barchas                                     Corporate
+Eugene Barchas                                     Home Office
+Eugene Hildebrand                                  Home Office
+Eugene Moren                                       Home Office
+Eva Jacobs                                         Home Office
+Evan Bailliet                                      Corporate
+Evan Henry                                         Corporate
+Evan Minnotte                                      Corporate
+Filia McAdams                                      Small Business
+Frank Atkinson                                     Corporate
+Frank Carlisle                                     Small Business
+Frank Gastineau                                    Small Business
+Frank Hawley                                       Home Office
+Frank Merwin                                       Consumer
+Frank Merwin                                       Corporate
+Frank Olsen                                        Small Business
+Frank Price                                        Corporate
+Fred Chung                                         Corporate
+Fred Harton                                        Home Office
+Fred Hopkins                                       Home Office
+Fred McMath                                        Small Business
+Fred Wasserman                                     Home Office
+Gary Hansen                                        Consumer
+Gary Hwang                                         Home Office
+Gary McGarr                                        Home Office
+Gary Mitchum                                       Consumer
+Gary Zandusky                                      Home Office
+Gene Hale                                          Consumer
+Gene McClure                                       Consumer
+Gene McClure                                       Home Office
+George Ashbrook                                    Consumer
+George Ashbrook                                    Small Business
+George Bell                                        Corporate
+George Zrebassa                                    Home Office
+Georgia Rosenberg                                  Consumer
+Giulietta Baptist                                  Home Office
+Giulietta Dortch                                   Consumer
+Giulietta Dortch                                   Corporate
+Giulietta Dortch                                   Small Business
+Giulietta Weimer                                   Corporate
+Giulietta Weimer                                   Home Office
+Grace Kelly                                        Consumer
+Grant Carroll                                      Corporate
+Grant Carroll                                      Small Business
+Grant Donatelli                                    Consumer
+Grant Thornton                                     Corporate
+Greg Guthrie                                       Corporate
+Greg Guthrie                                       Small Business
+Greg Hansen                                        Home Office
+Greg Matthias                                      Home Office
+Greg Matthias                                      Small Business
+Greg Tran                                          Home Office
+Guy Armstrong                                      Corporate
+Guy Phonely                                        Corporate
+Guy Thornton                                       Corporate
+Hallie Redmond                                     Home Office
+Hallie Redmond                                     Small Business
+Harold Dahlen                                      Consumer
+Harold Dahlen                                      Corporate
+Harold Engle                                       Consumer
+Harold Engle                                       Home Office
+Harold Pawlan                                      Small Business
+Harold Ryan                                        Home Office
+Harry Greene                                       Corporate
+Harry Marie                                        Consumer
+Heather Jas                                        Corporate
+Heather Kirkland                                   Home Office
+Helen Abelman                                      Home Office
+Helen Andreada                                     Corporate
+Helen Wasserman                                    Corporate
+Helen Wasserman                                    Home Office
+Henia Zydlo                                        Home Office
+Henry Goldwyn                                      Small Business
+Henry MacAllister                                  Small Business
+Herbert Flentye                                    Small Business
+Hilary Holden                                      Corporate
+Hunter Glantz                                      Corporate
+Hunter Lopez                                       Consumer
+Ionia McGrath                                      Home Office
+Ionia McGrath                                      Small Business
+Irene Maddox                                       Consumer
+Ivan Gibson                                        Corporate
+Ivan Liston                                        Consumer
+Jack Garza                                         Corporate
+Jack Lebron                                        Corporate
+Jack O'Briant                                      Consumer
+Jack O'Briant                                      Home Office
+Jack O'Briant                                      Small Business
+James Galang                                       Consumer
+James Lanier                                       Corporate
+Jamie Frazer                                       Small Business
+Jamie Kunitz                                       Corporate
+Jane Waco                                          Corporate
+Janet Lee                                          Consumer
+Janet Martin                                       Corporate
+Janet Molinari                                     Corporate
+Jas O'Carroll                                      Corporate
+Jas O'Carroll                                      Home Office
+Jason Fortune                                      Corporate
+Jason Gross                                        Small Business
+Jason Klamczynski                                  Home Office
+Jason Klamczynski                                  Small Business
+Jasper Cacioppo                                    Home Office
+Jay Fine                                           Consumer
+Jay Kimmel                                         Small Business
+Jenna Caffey                                       Consumer
+Jennifer Braxton                                   Small Business
+Jennifer Ferguson                                  Corporate
+Jennifer Ferguson                                  Home Office
+Jennifer Halladay                                  Home Office
+Jennifer Jackson                                   Home Office
+Jennifer Patt                                      Home Office
+Jeremy Ellison                                     Small Business
+Jeremy Farry                                       Small Business
+Jeremy Lonsdale                                    Corporate
+Jeremy Pistek                                      Corporate
+Jessica Myrick                                     Small Business
+Jesus Ocampo                                       Small Business
+Jill Fjeld                                         Home Office
+Jill Matthias                                      Consumer
+Jill Stevenson                                     Consumer
+Jim Epp                                            Small Business
+Jim Karlsson                                       Small Business
+Jim Kriz                                           Consumer
+Jim Mitchum                                        Consumer
+Jim Radford                                        Corporate
+Jim Sink                                           Corporate
+Jocasta Rupert                                     Consumer
+Joe Elijah                                         Home Office
+Joe Kamberova                                      Small Business
+Joel Eaton                                         Home Office
+Joel Jenkins                                       Corporate
+John Castell                                       Consumer
+John Castell                                       Small Business
+John Dryer                                         Corporate
+John Grady                                         Corporate
+John Huston                                        Consumer
+John Lee                                           Corporate
+John Lucas                                         Corporate
+John Lucas                                         Small Business
+John Murray                                        Small Business
+John Stevenson                                     Small Business
+Jonathan Doherty                                   Corporate
+Jonathan Howell                                    Consumer
+Joni Blumstein                                     Consumer
+Joni Blumstein                                     Home Office
+Joni Sundaresam                                    Home Office
+Joni Wasserman                                     Consumer
+Joseph Airdo                                       Consumer
+Joseph Holt                                        Home Office
+Joy Bell                                           Home Office
+Joy Daniels                                        Corporate
+Joy Smith                                          Consumer
+Joy Smith                                          Corporate
+Julia Barnett                                      Corporate
+Julia Barnett                                      Home Office
+Julia Dunbar                                       Consumer
+Julia West                                         Consumer
+Julia West                                         Corporate
+Julia West                                         Home Office
+Julia West                                         Small Business
+Juliana Krohn                                      Corporate
+Juliana Krohn                                      Small Business
+Julie Creighton                                    Corporate
+Julie Kriz                                         Corporate
+Julie Prescott                                     Home Office
+Justin Deggeller                                   Corporate
+Justin Ellison                                     Home Office
+Justin Hirsh                                       Consumer
+Justin Knight                                      Corporate
+Justin MacKendrick                                 Corporate
+Karen Bern                                         Corporate
+Karen Carlisle                                     Corporate
+Karen Carlisle                                     Home Office
+Karen Daniels                                      Consumer
+Karen Ferguson                                     Corporate
+Karen Ferguson                                     Home Office
+Karen Seio                                         Consumer
+Karl Brown                                         Corporate
+Karl Brown                                         Home Office
+Katharine Harms                                    Consumer
+Katherine Ducich                                   Corporate
+Katherine Hughes                                   Consumer
+Katherine Murray                                   Home Office
+Katherine Nockton                                  Corporate
+Katherine Nockton                                  Home Office
+Katrina Bavinger                                   Home Office
+Katrina Edelman                                    Corporate
+Katrina Willman                                    Consumer
+Kean Nguyen                                        Corporate
+Kean Nguyen                                        Small Business
+Kean Takahito                                      Home Office
+Kean Thornton                                      Corporate
+Keith Dawkins                                      Home Office
+Keith Herrera                                      Corporate
+Keith Herrera                                      Small Business
+Kelly Andreada                                     Home Office
+Kelly Collister                                    Consumer
+Kelly Lampkin                                      Home Office
+Kelly Williams                                     Corporate
+Ken Black                                          Consumer
+Ken Brennan                                        Consumer
+Ken Dana                                           Corporate
+Ken Dana                                           Small Business
+Ken Heidel                                         Corporate
+Ken Lonsdale                                       Consumer
+Khloe Miller                                       Consumer
+Khloe Miller                                       Corporate
+Khloe Miller                                       Home Office
+Kimberly Carter                                    Home Office
+Kimberly Carter                                    Small Business
+Kristen Hastings                                   Corporate
+Kristen Hastings                                   Small Business
+Kristina Nunn                                      Consumer
+Larry Blacks                                       Consumer
+Larry Hughes                                       Home Office
+Larry Tron                                         Home Office
+Laura Armstrong                                    Corporate
+Laura Armstrong                                    Small Business
+Laurel Beltran                                     Consumer
+Laurel Elliston                                    Corporate
+Laurel Elliston                                    Home Office
+Laurel Workman                                     Home Office
+Lauren Leatherbury                                 Corporate
+Lauren Leatherbury                                 Home Office
+Lela Donovan                                       Corporate
+Lena Cacioppo                                      Home Office
+Lena Creighton                                     Corporate
+Lena Creighton                                     Home Office
+Lena Hernandez                                     Home Office
+Lena Radford                                       Small Business
+Linda Cazamias                                     Corporate
+Linda Southworth                                   Consumer
+Lindsay Castell                                    Corporate
+Lindsay Castell                                    Small Business
+Lindsay Shagiari                                   Home Office
+Lindsay Williams                                   Corporate
+Lisa DeCherney                                     Corporate
+Lisa Hazard                                        Home Office
+Lisa Ryan                                          Home Office
+Liz Carlisle                                       Corporate
+Liz MacKendrick                                    Corporate
+Liz Pelletier                                      Corporate
+Liz Pelletier                                      Home Office
+Liz Price                                          Consumer
+Liz Price                                          Corporate
+Liz Thompson                                       Corporate
+Liz Willingham                                     Corporate
+Liz Willingham                                     Home Office
+Logan Currie                                       Small Business
+Logan Haushalter                                   Corporate
+Lori Olson                                         Consumer
+Luke Foster                                        Corporate
+Luke Schmidt                                       Home Office
+Luke Weiss                                         Corporate
+Lycoris Saunders                                   Corporate
+Lycoris Saunders                                   Home Office
+Lynn Smith                                         Corporate
+Magdelene Morse                                    Home Office
+Marc Crier                                         Consumer
+Marc Crier                                         Corporate
+Marc Harrigan                                      Home Office
+Maria Bertelson                                    Corporate
+Maria Bertelson                                    Home Office
+Maria Zettner                                      Corporate
+Maribeth Dona                                      Home Office
+Maribeth Schnelling                                Corporate
+Maribeth Yedwab                                    Home Office
+Marina Lichtenstein                                Corporate
+Maris LaWare                                       Home Office
+Mark Cousins                                       Corporate
+Mark Cousins                                       Home Office
+Mark Haberlin                                      Small Business
+Mark Hamilton                                      Home Office
+Mark Packer                                        Small Business
+Mark Van Huff                                      Home Office
+Mary Zewe                                          Corporate
+MaryBeth Skach                                     Home Office
+Mathew Reese                                       Small Business
+Matt Abelman                                       Consumer
+Matt Abelman                                       Home Office
+Matt Abelman                                       Small Business
+Matt Collins                                       Consumer
+Matt Collister                                     Home Office
+Matt Connell                                       Corporate
+Matt Hagelstein                                    Home Office
+Matthew Clasen                                     Consumer
+Matthew Grinstein                                  Small Business
+Maureen Fritzler                                   Corporate
+Maureen Gastineau                                  Consumer
+Maurice Satty                                      Corporate
+Max Engle                                          Corporate
+Max Jones                                          Home Office
+Max Ludwig                                         Corporate
+Maxwell Schwartz                                   Corporate
+Maya Herman                                        Corporate
+Meg O'Connel                                       Corporate
+Meg O'Connel                                       Small Business
+Meg Tillman                                        Small Business
+Melanie Page                                       Corporate
+Michael Chen                                       Consumer
+Michael Dominguez                                  Home Office
+Michael Grace                                      Corporate
+Michael Granlund                                   Corporate
+Michael Granlund                                   Home Office
+Michael Kennedy                                    Corporate
+Michael Moore                                      Corporate
+Michael Nguyen                                     Small Business
+Michael Oakman                                     Small Business
+Michael Paige                                      Small Business
+Michael Stewart                                    Small Business
+Michelle Arnett                                    Home Office
+Michelle Ellison                                   Consumer
+Michelle Ellison                                   Home Office
+Michelle Ellison                                   Small Business
+Michelle Huthwaite                                 Home Office
+Michelle Lonsdale                                  Corporate
+Michelle Lonsdale                                  Home Office
+Michelle Moray                                     Corporate
+Michelle Tran                                      Consumer
+Michelle Tran                                      Corporate
+Michelle Tran                                      Home Office
+Mick Brown                                         Consumer
+Mick Crebagga                                      Corporate
+Mick Crebagga                                      Home Office
+Mick Hernandez                                     Home Office
+Mike Caudle                                        Corporate
+Mike Gockenbach                                    Consumer
+Mike Kennedy                                       Corporate
+Mike Kennedy                                       Small Business
+Mike Pelletier                                     Corporate
+Mike Vittorini                                     Small Business
+Mitch Gastineau                                    Corporate
+Mitch Gastineau                                    Small Business
+Mitch Webber                                       Corporate
+Mitch Willingham                                   Corporate
+Monica Federle                                     Corporate
+Muhammed Lee                                       Consumer
+Muhammed Lee                                       Corporate
+Muhammed MacIntyre                                 Small Business
+Muhammed Yedwab                                    Consumer
+Nancy Lomonaco                                     Home Office
+Naresj Patel                                       Corporate
+Naresj Patel                                       Small Business
+Nat Carroll                                        Home Office
+Nat Gilpin                                         Consumer
+Natalie Webber                                     Consumer
+Natalie Webber                                     Corporate
+Nathan Cano                                        Consumer
+Nathan Gelder                                      Home Office
+Nathan Mautz                                       Corporate
+Nathan Mautz                                       Home Office
+Neil Ducich                                        Home Office
+Neil French                                        Consumer
+Neil French                                        Corporate
+Neil Knudson                                       Corporate
+Neil Knudson                                       Home Office
+Neola Schneider                                    Home Office
+Neoma Murray                                       Small Business
+Nick Crebassa                                      Corporate
+Nick Radford                                       Corporate
+Nick Zandusky                                      Small Business
+Nicole Brennan                                     Consumer
+Nicole Brennan                                     Home Office
+Nicole Fjeld                                       Small Business
+Nicole Hansen                                      Corporate
+Nicole Hansen                                      Small Business
+Noah Childs                                        Home Office
+Noel Staavos                                       Home Office
+Nona Balk                                          Corporate
+Nora Paige                                         Consumer
+Nora Paige                                         Small Business
+Nora Pelletier                                     Corporate
+Nora Pelletier                                     Home Office
+Nora Price                                         Home Office
+Nora Price                                         Small Business
+Odella Nelson                                      Small Business
+Olvera Toch                                        Home Office
+Pamela Stobb                                       Consumer
+Parhena Norris                                     Home Office
+Patrick Bzostek                                    Consumer
+Patrick Gardner                                    Consumer
+Patrick Jones                                      Home Office
+Patrick O'Brill                                    Home Office
+Patrick O'Donnell                                  Home Office
+Patrick Ryan                                       Corporate
+Paul Gonzalez                                      Corporate
+Paul Knutson                                       Corporate
+Paul Lucas                                         Corporate
+Paul MacIntyre                                     Corporate
+Paul Prost                                         Corporate
+Paul Stevenson                                     Corporate
+Paul Van Hugh                                      Consumer
+Pauline Chand                                      Corporate
+Pauline Chand                                      Small Business
+Pauline Johnson                                    Corporate
+Pauline Webber                                     Consumer
+Penelope Sewall                                    Home Office
+Pete Armstrong                                     Consumer
+Pete Kriz                                          Corporate
+Pete Takahito                                      Corporate
+Peter Buhler                                       Consumer
+Peter Fuller                                       Consumer
+Peter Fuller                                       Corporate
+Peter McVee                                        Small Business
+Philip Brown                                       Corporate
+Philip Brown                                       Home Office
+Philip Fox                                         Home Office
+Philisse Overcash                                  Small Business
+Phillina Ober                                      Small Business
+Phillip Breyer                                     Corporate
+Phillip Flathmann                                  Small Business
+Pierre Wener                                       Home Office
+Quincy Jones                                       Corporate
+Quincy Jones                                       Home Office
+Quincy Jones                                       Small Business
+Rachel Payne                                       Consumer
+Ralph Arnett                                       Consumer
+Ralph Kennedy                                      Corporate
+Ralph Knight                                       Consumer
+Randy Bradley                                      Corporate
+Randy Bradley                                      Small Business
+Randy Ferguson                                     Corporate
+Randy Ferguson                                     Home Office
+Raymond Book                                       Consumer
+Raymond Fair                                       Small Business
+Resi Polking                                       Small Business
+Ricardo Block                                      Corporate
+Ricardo Emerson                                    Corporate
+Richard Bierner                                    Small Business
+Richard Eichhorn                                   Consumer
+Rick Bensley                                       Consumer
+Rick Duston                                        Corporate
+Rick Hansen                                        Corporate
+Rick Hansen                                        Home Office
+Rick Huthwaite                                     Corporate
+Rick Wilson                                        Consumer
+Rick Wilson                                        Corporate
+Ritsa Hightower                                    Corporate
+Rob Beeghly                                        Consumer
+Rob Dowd                                           Corporate
+Rob Haberlin                                       Consumer
+Rob Haberlin                                       Corporate
+Rob Lucas                                          Small Business
+Rob Williams                                       Home Office
+Robert Barroso                                     Small Business
+Robert Dilbeck                                     Corporate
+Robert Marley                                      Corporate
+Robert Waldorf                                     Home Office
+Roger Barcio                                       Corporate
+Roger Demir                                        Consumer
+Roland Black                                       Small Business
+Roland Fjeld                                       Corporate
+Roland Murray                                      Home Office
+Rose O'Brian                                       Home Office
+Ross Baird                                         Corporate
+Ross DeVincentis                                   Corporate
+Roy Collins                                        Corporate
+Roy French                                         Consumer
+Roy Phan                                           Consumer
+Roy Phan                                           Corporate
+Roy Skaria                                         Corporate
+Ruben Ausman                                       Corporate
+Ruben Dartt                                        Corporate
+Russell Applegate                                  Home Office
+Russell Applegate                                  Small Business
+Russell D'Ascenzo                                  Consumer
+Ryan Akin                                          Consumer
+Ryan Crowe                                         Small Business
+Sally Hughsby                                      Consumer
+Sally Knutson                                      Consumer
+Sally Knutson                                      Corporate
+Sally Knutson                                      Home Office
+Sally Knutson                                      Small Business
+Sally Matthias                                     Corporate
+Sally Matthias                                     Home Office
+Sam Craven                                         Home Office
+Sam Zeldin                                         Small Business
+Sandra Flanagan                                    Corporate
+Sandra Flanagan                                    Home Office
+Sandra Glassco                                     Home Office
+Sanjit Chand                                       Home Office
+Sanjit Engle                                       Home Office
+Sanjit Jacobs                                      Consumer
+Saphhira Shifley                                   Consumer
+Saphhira Shifley                                   Corporate
+Sara Luxemburg                                     Corporate
+Sara Luxemburg                                     Small Business
+Sarah Bern                                         Corporate
+Sarah Brown                                        Consumer
+Sarah Foster                                       Corporate
+Sarah Jordon                                       Consumer
+Scot Coram                                         Corporate
+Scot Wooten                                        Corporate
+Scott Cohen                                        Consumer
+Scott Williamson                                   Small Business
+Sean Braxton                                       Small Business
+Sean Christensen                                   Home Office
+Sean Miller                                        Small Business
+Sean O'Donnell                                     Corporate
+Sean Wendt                                         Corporate
+Seth Vernon                                        Home Office
+Shahid Collister                                   Home Office
+Shahid Hopkins                                     Small Business
+Shahid Shariari                                    Consumer
+Shahid Shariari                                    Corporate
+Sharelle Roach                                     Home Office
+Shaun Chance                                       Corporate
+Shaun Weien                                        Home Office
+Sheri Gordon                                       Corporate
+Shirley Daniels                                    Corporate
+Shirley Jackson                                    Corporate
+Shirley Schmidt                                    Corporate
+Shui Tom                                           Consumer
+Sibella Parks                                      Small Business
+Skye Norling                                       Home Office
+Sonia Cooley                                       Corporate
+Sonia Sunley                                       Corporate
+Sonia Sunley                                       Small Business
+Speros Goranitis                                   Corporate
+Stefania Perrino                                   Corporate
+Stefanie Holloman                                  Small Business
+Stephanie Phelps                                   Consumer
+Stephanie Ulpright                                 Consumer
+Steve Carroll                                      Consumer
+Steve Chapman                                      Corporate
+Steve Nguyen                                       Consumer
+Steve Nguyen                                       Small Business
+Steven Cartwright                                  Home Office
+Steven Roelle                                      Small Business
+Steven Ward                                        Consumer
+Stewart Carmichael                                 Corporate
+Stewart Visinsky                                   Corporate
+Stuart Calhoun                                     Consumer
+Stuart Van                                         Consumer
+Sue Ann Reed                                       Consumer
+Sung Chung                                         Home Office
+Sung Pak                                           Small Business
+Sung Shariari                                      Corporate
+Susan Gilcrest                                     Home Office
+Susan MacKendrick                                  Corporate
+Susan Pistek                                       Home Office
+Susan Vittorini                                    Corporate
+Susan Vittorini                                    Home Office
+Suzanne McNair                                     Corporate
+Suzanne McNair                                     Small Business
+Sylvia Foulston                                    Consumer
+Sylvia Foulston                                    Corporate
+Sylvia Foulston                                    Home Office
+Tamara Chand                                       Consumer
+Tamara Dahlen                                      Corporate
+Tamara Manning                                     Corporate
+Tamara Willingham                                  Corporate
+Tamara Willingham                                  Home Office
+Tanja Norvell                                      Consumer
+Tanja Norvell                                      Corporate
+Ted Butterfield                                    Corporate
+Ted Trevino                                        Corporate
+Thais Sissman                                      Corporate
+Thais Sissman                                      Small Business
+Thea Hendricks                                     Home Office
+Thea Hudgings                                      Consumer
+Theone Pippenger                                   Corporate
+Theresa Coyne                                      Home Office
+Theresa Swint                                      Consumer
+Theresa Swint                                      Home Office
+Theresa Swint                                      Small Business
+Thomas Boland                                      Corporate
+Thomas Brumley                                     Consumer
+Thomas Seio                                        Home Office
+Thomas Thornton                                    Consumer
+Tiffany House                                      Corporate
+Tim Brockman                                       Consumer
+Tim Taslimi                                        Corporate
+Toby Braunhardt                                    Corporate
+Toby Carlisle                                      Home Office
+Toby Grace                                         Home Office
+Toby Knight                                        Consumer
+Toby Knight                                        Corporate
+Toby Swindell                                      Small Business
+Todd Boyes                                         Consumer
+Todd Boyes                                         Small Business
+Todd Sumrall                                       Consumer
+Tom Ashbrook                                       Home Office
+Tom Boeckenhauer                                   Corporate
+Tom Prescott                                       Small Business
+Tom Stivers                                        Corporate
+Tom Stivers                                        Small Business
+Tom Zandusky                                       Home Office
+Tonja Turnell                                      Consumer
+Tony Chapman                                       Consumer
+Tony Molinari                                      Corporate
+Tony Sayre                                         Home Office
+Tony Sayre                                         Small Business
+Tracy Blumstein                                    Home Office
+Tracy Collins                                      Consumer
+Tracy Collins                                      Corporate
+Tracy Hopkins                                      Small Business
+Tracy Poddar                                       Corporate
+Tracy Zic                                          Consumer
+Troy Blackwell                                     Home Office
+Troy Staebel                                       Small Business
+Trudy Bell                                         Consumer
+Trudy Brown                                        Small Business
+Trudy Schmidt                                      Small Business
+Valerie Dominguez                                  Corporate
+Valerie Mitchum                                    Home Office
+Valerie Takahito                                   Consumer
+Vicky Freymann                                     Home Office
+Victor Price                                       Consumer
+Victoria Brennan                                   Small Business
+Victoria Pisteka                                   Corporate
+Victoria Wilson                                    Home Office
+Vivek Gonzalez                                     Consumer
+Vivek Grady                                        Corporate
+Vivek Grady                                        Home Office
+Vivek Sundaresam                                   Home Office
+Vivian Mathis                                      Consumer
+Vivian Mathis                                      Home Office
+William Brown                                      Corporate
+William Brown                                      Home Office
+Xylona Price                                       Corporate
+Yana Sorensen                                      Corporate
+Yoseph Carroll                                     Consumer
+
+(951 rows affected)
+
+order_priority                                     ship_mode                                          avg_shipping_cost      total_orders
+-------------------------------------------------- -------------------------------------------------- ---------------------- ------------
+Critical                                           Regular Air                                        7.27691525423725       1180
+Low                                                Express Air                                        8.16647368421053       190
+Critical                                           Express Air                                        8.7105                 200
+High                                               Delivery Truck                                     45.1890322580645       248
+Not Specified                                      Delivery Truck                                     43.6651627906977       215
+Medium                                             Express Air                                        8.12731343283582       201
+Medium                                             Regular Air                                        7.68875102040813       1225
+Low                                                Regular Air                                        8.01845312499998       1280
+High                                               Express Air                                        6.85627358490567       212
+Critical                                           Delivery Truck                                     47.2974561403509       228
+High                                               Regular Air                                        7.64909021406724       1308
+Not Specified                                      Regular Air                                        7.62261550509002       1277
+Low                                                Delivery Truck                                     44.52644               250
+Medium                                             Delivery Truck                                     46.154243902439        205
+Not Specified                                      Express Air                                        8.167                  180
+
+(15 rows affected)
+
+
+Completion time: 2025-07-04T12:57:15.4736513+01:00
